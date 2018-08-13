@@ -2,7 +2,9 @@
 
 Hey there!
 I made this so I could use my custom uploader that I made for ShareX on Linux as well.
+
 I use this script on my server:  https://pastebin.com/ReuYJka0
+
 This project focuses on the custom uploader part, I'm not trying to copy ShareX entirely as there are many project out there doing this already.
 
 
