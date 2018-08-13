@@ -5,9 +5,11 @@ I made this so I could use my custom uploader that I made for ShareX on Linux as
 I use this script on my server:  https://pastebin.com/ReuYJka0
 This project focuses on the custom uploader part, I'm not trying to copy ShareX entirely as there are many project out there doing this already.
 
+
 ## Features
 * Take and upload a screenshot of the entire screen.
 * Crop a screenshot and upload the area of said screenshot.
+
 
 ## Upcoming features
 * Uploading files from clipboard.
@@ -21,6 +23,7 @@ This project focuses on the custom uploader part, I'm not trying to copy ShareX 
   * `passwd` corresponds to `$key`.
   * `folderpath` states where the screenshots will be saved.
 
+
 ## Usage
 You can call this script from the terminal with 
 
@@ -30,6 +33,7 @@ You can call this script from the terminal with
 `python uplotopia.py area` if you want to select an area. 
 
 The easiest way of using this is if you create a custom keyboard shortcut and set either of these as commands for them.
+
 
 ## Dependencies
 You will need to install the following packages:
@@ -46,8 +50,11 @@ You will need to install the following packages:
 
 `sudo pip install pygtk`
 
+
 ## Troubleshooting
 
 You might be getting an error with pyperclip, this means there is no engine it can work with.
+
 Possible fix: `sudo apt-get install xsel`
+
 More information: https://pyperclip.readthedocs.io/en/latest/introduction.html
