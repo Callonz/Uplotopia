@@ -52,6 +52,7 @@ You will need to install the following packages:
 
 `sudo pip install pygtk`
 
+`sudo pip install pyperclip`
 
 ## Troubleshooting
 
