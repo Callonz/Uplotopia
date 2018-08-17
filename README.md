@@ -36,6 +36,9 @@ You can call this script from the terminal with
 
 `python uplotopia.py area` if you want to select an area. 
 
+
+`python uplotopia.py text` to upload text in your clipboard. 
+
 The easiest way of using this is if you create a custom keyboard shortcut and set either of these as commands for them.
 
 
