@@ -18,6 +18,7 @@ folderpath = "/home/user/Pictures"
 filename_format = str(datetime.datetime.now()).split('.')[0].replace(':','_').replace(' ', '_')
 filename = folderpath + filename_format + '.png'
 filename_area = folderpath + filename_format + '_area.png'
+upload_text = folderpath + filename_format + ".txt"
 #	Config End - You won't need to edit anything past this point
 ##############################################################################################################
 
@@ -65,6 +66,7 @@ def showPreview(path):
 			break
 
 # Thanks to samplebias for the following code (https://stackoverflow.com/questions/6136588/image-cropping-using-python/8696558)
+#-#
 def displayImage(screen, px, topleft, prior):
     # ensure that the rect always has positive width, height
     x, y = topleft
@@ -116,10 +118,6 @@ def mainLoop(screen, px):
         if topleft:
             prior = displayImage(screen, px, topleft, prior)
     return ( topleft + bottomright )
-
-def Fullscreen():
-	im = ImageGrab.grab()
-	im.save(filename)
 	
 def Area():
 	tmp = ImageGrab.grab()
@@ -141,7 +139,28 @@ def Area():
 		im = im.crop(( left, upper, right, lower))
 		pygame.display.quit()
 		im.save(filename_area)
-	
+#-#
+
+def Fullscreen():
+	im = ImageGrab.grab()
+	im.save(filename)
+
+def Text():
+	try:
+		# for Python2
+		from Tkinter import * 
+	except ImportError:
+		# for Python3
+		from tkinter import * 
+	r = Tkinter.Tk()
+	txt = r.clipboard_get()
+	if len(txt.get()) == 0:
+		#There is no text in clipboard, exiting
+		sys.exit("Clipboard is empty.")
+	text_file = open(upload_text, "w")
+	text_file.write(txt)
+	text_file.close()
+		
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		if sys.argv[1] == "fullscreen":
@@ -152,6 +171,9 @@ if __name__ == '__main__':
 			#im = ImageGrab.grab(bbox=(10,10,510,510)) # X1,Y1,X2,Y2
 			type = 1		
 			Area()
+		elif sys.argv[1] == "text":
+			type = 2
+			Text()
 	else:
 		#defaulting to fullscreen
 		type = 0
@@ -161,14 +183,21 @@ if __name__ == '__main__':
 userdata = {"k": passwd}
 
 if type == 0:
-	uploadfile = filename	
+	uploadfile = filename
+	showprev = 1	
 if type == 1:
 	uploadfile = filename_area
+	showprev = 1
+if type == 2:
+	uploadfile = upload_text
+	showprev = 0
 
 file = {'d': open(uploadfile, 'rb')}
 resp = requests.post(url, data=userdata, files=file)
 responsetext = str(resp.text)
 pyperclip.copy(responsetext)
 showPreview(uploadfile)
+if showprev == 1:	
+	showPreview(uploadfile)
 # this needs fixing lel
 #playsound(os.getcwd() + '/success.wav')

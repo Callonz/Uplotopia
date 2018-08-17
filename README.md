@@ -11,11 +11,13 @@ This project focuses on the custom uploader part, I'm not trying to copy ShareX 
 ## Features
 * Take and upload a screenshot of the entire screen.
 * Crop a screenshot and upload the area of said screenshot.
+* Uploading text from clipboard.
 
 
 ## Upcoming features
 * Uploading files from clipboard.
-* Uploading text from clipboard.
+* GUI to configure the the values.
+
 
 
 ## Setup
@@ -42,15 +44,17 @@ You will need to install the following packages:
 
 `sudo apt-get install python-pil`
 
-`sudo pip install pyscreenshot`
+`sudo apt-get install python-tk`
 
-`sudo pip install requests`
+`pip install pyscreenshot`
 
-`sudo pip install playsound`
+`pip install requests`
 
-`sudo pip install pygame`
+`pip install playsound`
 
-`sudo pip install pygtk`
+`pip install pygame`
+
+`pip install pygtk`
 
 
 ## Troubleshooting
