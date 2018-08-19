@@ -21,11 +21,12 @@ This project focuses on the custom uploader part, I'm not trying to copy ShareX 
 
 
 ## Setup
-* Download uplotopia.py.
-* Edit the file and change the following variables set in the config block.
+* Download this repository and paste the files in a folder somewhere (e.g. /home/user/bob/uplotopia/).
+* Open the config.ini change the following variables.
   * `url` corresponds to `$uploadhost` in the aforementioned script.
-  * `passwd` corresponds to `$key`.
-  * `folderpath` states where the screenshots will be saved.
+  * `key` corresponds to `$key`.
+  * `folderpath` states where the screenshots will be saved locally.
+  * `filename` determines how the files will be saved, you may change this but it is not necessary.
 
 
 ## Usage
@@ -59,7 +60,10 @@ You will need to install the following packages:
 
 `pip install pygtk`
 
-`sudo pip install pyperclip`
+`pip install pyperclip`
+
+`pip install configparser`
+
 
 ## Troubleshooting
 

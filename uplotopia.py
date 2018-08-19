@@ -1,26 +1,23 @@
 #########################################################################################
-#	Uplotopia V0.1                                                                  #
+#	Uplotopia V0.2                                                                  #
 #	by Callonz                                                                      #
 #	Tested with python 2.7, but will probaby work with other versions also.         #
 #########################################################################################
-import requests, pyperclip, sys, pygame, os, datetime, time, subprocess
+import requests, pyperclip, sys, datetime, pygame, os, time, subprocess, configparser
 from playsound import playsound
 from PIL import Image
 import pyscreenshot as ImageGrab
 
-##############################################################################################################
-#	Config
-url = "https://example.com"
-passwd = "123456"
-# This is where the image will be saved locally
-folderpath = "/home/user/Pictures"
-# This will result in filenames looking like this: YYY-MM-DD_hh_mm_ss
-filename_format = str(datetime.datetime.now()).split('.')[0].replace(':','_').replace(' ', '_')
-filename = folderpath + filename_format + '.png'
-filename_area = folderpath + filename_format + '_area.png'
-upload_text = folderpath + filename_format + ".txt"
-#	Config End - You won't need to edit anything past this point
-##############################################################################################################
+config = configparser.ConfigParser()
+c_path, c_file = os.path.split(os.path.realpath(__file__))
+config.read(c_path + '/config.ini')
+
+# technically it would be possible to define multiple hosts and calling upon them via argv's and loading them accordingly in this part, but this has a very low priority for me so maybe I will add this sometime in the future
+default = config['DEFAULT']
+
+url = default['url']
+passwd = default['key']
+folderpath = default['folderpath']
 
 def showPreview(path):
 	# The following part is for getting the current screen resolution so I can display the preview. I know there are better way of doing this and I may change it in the future but for now this works	
@@ -54,11 +51,12 @@ def showPreview(path):
 	c = pygame.time.Clock() # create a clock object for timing
 
 	while True:
-		px = pygame.image.load(path)
-		px = pygame.transform.scale(px, (w, h))
-		screen.blit(px, px.get_rect())
-		pygame.display.flip()
-		screen.blit(px,(0,0))
+		if currentupload.type == 'png': #this results in the preview for a non-image upload just being black, this needs to be fixed later on
+			px = pygame.image.load(path)
+			px = pygame.transform.scale(px, (w, h))
+			screen.blit(px, px.get_rect())
+			pygame.display.flip()
+			screen.blit(px,(0,0))
 		pygame.display.flip() # update the display
 		c.tick(3) # only three images per second
 		In += 1
@@ -119,10 +117,10 @@ def mainLoop(screen, px):
             prior = displayImage(screen, px, topleft, prior)
     return ( topleft + bottomright )
 	
-def Area():
+def Area(currentupload):
 	tmp = ImageGrab.grab()
-	tmp.save(filename)
-	input_loc = filename		
+	tmp.save(currentupload.getFilename())
+	input_loc = currentupload.getFilename()		
 	screen, px = setup(input_loc)
 	left, upper, right, lower = mainLoop(screen, px)
 	# ensure output rect always has positive width, height
@@ -133,71 +131,98 @@ def Area():
 		im = Image.open(input_loc)
 		im = im.crop(( left, upper, right, lower))
 		pygame.display.quit()
-		im.save(filename_area)
+		im.save(currentupload.getFilename())
 	else:
 		im = Image.open(input_loc)
 		im = im.crop(( left, upper, right, lower))
 		pygame.display.quit()
-		im.save(filename_area)
+		im.save(currentupload.getFilename())
 #-#
 
-def Fullscreen():
-	im = ImageGrab.grab()
-	im.save(filename)
+class _UploadFile:
+	
+	def __init__(self, type):
+		if type == 0:
+			ext = '.png'
+			self.type = 'png'
+		if type == 1:
+			ext = '_area.png'
+			self.type = 'png'
+		if type == 2:
+			ext = '.txt'
+			self.type = 'txt'
 
-def Text():
+		date = str(datetime.datetime.now()).split(' ')[0]	
+		time = str(datetime.datetime.now()).split(' ')[1].split('.')[0]
+		year = date.split('-')[0]
+		month = date.split('-')[1]
+		day = date.split('-')[2]
+		hour = time.split(':')[0]
+		minute = time.split(':')[1]
+		second = time.split(':')[2]
+		filename = default['filename'].replace('&Y',year).replace('&M',month).replace('&D',day).replace('&h',hour).replace('&m',minute).replace('&s',second)
+		filename = default['folderpath'] + filename + ext 	
+		self.name = filename		
+
+	def getFilename(self):
+		return self.name
+
+def Fullscreen(currentupload):
+	im = ImageGrab.grab()
+	im.save(currentupload.getFilename())
+
+def Text(currentupload):
 	try:
 		# for Python2
-		from Tkinter import * 
+		import Tkinter 
 	except ImportError:
 		# for Python3
-		from tkinter import * 
+		import tkinter 
+	# Using tkinter to grab the clipboard text results in an empty tkinter windows showing up. This will be fixed later on as it doesn't bother me too much at the moment
 	r = Tkinter.Tk()
 	txt = r.clipboard_get()
-	if len(txt.get()) == 0:
+	if len(txt) == 0:
 		#There is no text in clipboard, exiting
 		sys.exit("Clipboard is empty.")
-	text_file = open(upload_text, "w")
+	text_file = open(currentupload.getFilename(), "w")
 	text_file.write(txt)
 	text_file.close()
 		
+
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		if sys.argv[1] == "fullscreen":
 			# grab fullscreen
-			type = 0
-			Fullscreen()
+			currentupload = _UploadFile(0)
+			Fullscreen(currentupload)
 		elif sys.argv[1] == "area":
-			#im = ImageGrab.grab(bbox=(10,10,510,510)) # X1,Y1,X2,Y2
-			type = 1		
-			Area()
+			# grab an area
+			currentupload = _UploadFile(1)		
+			Area(currentupload)
 		elif sys.argv[1] == "text":
-			type = 2
-			Text()
+			# upload text in clipboard
+			currentupload = _UploadFile(2)
+			Text(currentupload)
+		else:
+			# Unknown argv, exiting		
+			sys.exit("Argument not defined.")
+
 	else:
-		#defaulting to fullscreen
-		type = 0
-		Fullscreen()
+		#if no argv is given it will only play the success sound. this is so I can call the script itself later on after the upload as a subprocess, so that the preview and sound appear at the same time.  
+		playsound(c_path + '/success.wav')
+		sys.exit()
+
 
 			
 userdata = {"k": passwd}
 
-if type == 0:
-	uploadfile = filename
-	showprev = 1	
-if type == 1:
-	uploadfile = filename_area
-	showprev = 1
-if type == 2:
-	uploadfile = upload_text
-	showprev = 0
+uploadfile = currentupload.getFilename()
+
 
 file = {'d': open(uploadfile, 'rb')}
-resp = requests.post(url, data=userdata, files=file)
-responsetext = str(resp.text)
-pyperclip.copy(responsetext)
-showPreview(uploadfile)
-if showprev == 1:	
-	showPreview(uploadfile)
-# this needs fixing lel
-#playsound(os.getcwd() + '/success.wav')
+resp = requests.post(url, data=userdata, files=file) 			# This is there the actual upload happens
+responsetext = str(resp.text)									# grabbing the response from the server
+subprocess.Popen([sys.executable, c_path + "/uplotopia.py"])	# starting a subprocess of calling this file again so it plays the "success.wav" sound 
+pyperclip.copy(responsetext)									# copying the responsetext (most likely the link to the uploaded file) to the clipboard
+showPreview(uploadfile)											# showing a preview of the image - if the file was not an image it's just a black screen for now
+sys.exit()														# :)
