@@ -63,6 +63,34 @@ def showPreview(path):
 		if In == 5:	# end the preview after 5 iterations
 			break
 
+def config():
+	# Size of the config window
+	w = 500
+	h = 500
+	size=(w,h)
+
+
+	In=1
+
+	pygame.init()
+
+	# defining the preview windows as screen
+	screen = pygame.display.set_mode(size, pygame.NOFRAME) 
+	c = pygame.time.Clock() # create a clock object for timing
+
+	while True:
+		#if currentupload.type == 'png': #this results in the preview for a non-image upload just being black, this needs to be fixed later on
+		#	px = pygame.image.load(path)
+		#	px = pygame.transform.scale(px, (w, h))
+		#	screen.blit(px, px.get_rect())
+		#	pygame.display.flip()
+		#	screen.blit(px,(0,0))
+		pygame.display.flip() # update the display
+		c.tick(3) # only three images per second
+		In += 1
+		#if In == 5:	# end the preview after 5 iterations
+		#	break	
+		
 # Thanks to samplebias for the following code (https://stackoverflow.com/questions/6136588/image-cropping-using-python/8696558)
 #-#
 def displayImage(screen, px, topleft, prior):
@@ -203,6 +231,10 @@ if __name__ == '__main__':
 			# upload text in clipboard
 			currentupload = _UploadFile(2)
 			Text(currentupload)
+		elif sys.argv[1] == "config":
+			# initiate config
+			config()
+			sys.exit()
 		else:
 			# Unknown argv, exiting		
 			sys.exit("Argument not defined.")
