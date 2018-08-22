@@ -16,7 +16,7 @@ This project focuses on the custom uploader part, I'm not trying to copy ShareX 
 
 ## Upcoming features
 * Uploading files from clipboard.
-* GUI to configure the the values.
+* GUI to configure the values.
 
 
 
