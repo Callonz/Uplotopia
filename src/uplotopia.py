@@ -252,9 +252,9 @@ uploadfile = currentupload.getFilename()
 
 
 file = {'d': open(uploadfile, 'rb')}
-resp = requests.post(url, data=userdata, files=file) 			# This is there the actual upload happens
-responsetext = str(resp.text)									# grabbing the response from the server
-subprocess.Popen([sys.executable, c_path + "/uplotopia.py"])	# starting a subprocess of calling this file again so it plays the "success.wav" sound 
-pyperclip.copy(responsetext)									# copying the responsetext (most likely the link to the uploaded file) to the clipboard
-showPreview(uploadfile)											# showing a preview of the image - if the file was not an image it's just a black screen for now
-sys.exit()														# :)
+resp = requests.post(url, data=userdata, files=file) # This is where the actual upload happens
+responsetext = str(resp.text)# grabbing the response from the server
+subprocess.Popen([sys.executable, c_path + "/uplotopia.py"])# starting a subprocess of calling this file again so it plays the "success.wav" sound 
+pyperclip.copy(responsetext)# copying the responsetext (most likely the link to the uploaded file) to the clipboard
+showPreview(uploadfile)	# showing a preview of the image - if the file was not an image it's just a black screen for now
+sys.exit()# :)
